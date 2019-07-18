@@ -1,3 +1,4 @@
 -r testing.txt
 
 flake8
+ipython==7.6.1
