@@ -39,6 +39,8 @@ INSTALLED_APPS = [
 
     # own apps
     'accounts',
+    'budgets',
+    'transactions',
 ]
 
 MIDDLEWARE = [

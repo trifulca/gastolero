@@ -34,3 +34,6 @@ class Account(models.Model):
     # entidad
     # nickname
     # cbu/cvu ¿?
+
+    def __str__(self):
+        return '{}'.format(self.alias)
