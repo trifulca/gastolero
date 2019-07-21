@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -37,3 +39,7 @@ class Account(models.Model):
 
     def __str__(self):
         return '{}'.format(self.alias)
+
+    def balance(self):
+        return self.trans_in.aggregate(s=Coalesce(Sum('amount'), 0))['s'] + \
+               self.trans_out.aggregate(s=Coalesce(Sum('amount'), 0))['s']

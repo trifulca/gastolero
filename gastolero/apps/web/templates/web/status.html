@@ -1,0 +1,62 @@
+{% extends "web/base.html" %}
+
+{% block page_title %}Estado{% endblock %}
+
+{% block content %}
+
+<div>
+<h2>Cuentas</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Balance</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for account in accounts %}
+    <tr>
+      <td>{{ account.alias }}</td>
+      <td>{{ account.balance }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="2">No hay cuentas</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+</div>
+
+<div>
+<h2>Presupuestos</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Planeado</th>
+      <th>Disponible</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for budget in budgets %}
+    <tr>
+      <td>{{ budget.budget.name }}</td>
+      <td>{{ budget.planned }}</td>
+      <td>{{ budget.balance }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="2">No hay presupuestos</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% endblock %}
