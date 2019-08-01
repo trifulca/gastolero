@@ -7,5 +7,5 @@ from .models import Transaction
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('timestamp', 'amount', 'source', 'destination', 'budget',
+    list_display = ('timestamp', 'amount', 'account', 'budget',
                     'description')

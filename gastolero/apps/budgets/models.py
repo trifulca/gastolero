@@ -17,14 +17,27 @@ class Budget(models.Model):
     def __str__(self):
         return '{}'.format(self.name)
 
+    def create_monthly_budget(self, month):
+        qs_check = self.months.filter(month=month)
+        if qs_check.count() == 1:
+            return qs_check.first()
+
+        return MonthlyBudget.objects.create(budget=self, month=month,
+                                            planned=0)
+
 
 class MonthlyBudget(models.Model):
-    budget = models.ForeignKey('Budget', on_delete=models.CASCADE)
+    budget = models.ForeignKey('Budget', on_delete=models.CASCADE,
+                               related_name='months')
     month = MonthField()
     planned = models.DecimalField(max_digits=12, decimal_places=2)
 
+    class Meta:
+        unique_together = ('budget', 'month')
+        ordering = ('month', 'budget__name')
+
     def __str__(self):
-        return '{} - {}'.format(self.budget, self.month)
+        return '{} ({})'.format(self.budget, self.month._date.strftime('%B'))
 
     def balance(self):
         return self.planned + \

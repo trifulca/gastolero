@@ -37,9 +37,11 @@ class Account(models.Model):
     # nickname
     # cbu/cvu ¿?
 
+    class Meta:
+        ordering = ['alias']
+
     def __str__(self):
         return '{}'.format(self.alias)
 
     def balance(self):
-        return self.trans_in.aggregate(s=Coalesce(Sum('amount'), 0))['s'] + \
-               self.trans_out.aggregate(s=Coalesce(Sum('amount'), 0))['s']
+        return self.transactions.aggregate(s=Coalesce(Sum('amount'), 0))['s']
