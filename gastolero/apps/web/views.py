@@ -7,7 +7,7 @@ from django.db.models import Sum
 from transactions.models import Transaction
 from accounts.models import Account
 from budgets.models import MonthlyBudget
-from .forms import AssignmentForm, SpendForm
+from .forms import SpendForm, AccountMoveForm
 
 
 def current_month():
@@ -20,8 +20,7 @@ def status(request):
     # cur_month = current_month()
     cur_month = month.Month(2019, 8)
 
-    # accounts = Account.objects.filter(user=request.user)
-    accounts = Account.objects.filter(user_id=2)
+    accounts = Account.objects.filter(user=request.user)
     accounts_total = sum([a.balance() for a in accounts])
 
     budgets = MonthlyBudget.objects.filter(month=cur_month)
@@ -38,7 +37,7 @@ def status(request):
     })
 
 
-def spend_add(request):
+def account_add(request):
     form = SpendForm()
 
     return render(request, 'web/spend_add.html', {
@@ -46,9 +45,9 @@ def spend_add(request):
     })
 
 
-def assignment_add(request):
-    form = AssignmentForm()
+def account_move(request):
+    form = AccountMoveForm(user=request.user)
 
-    return render(request, 'web/spend_add.html', {
+    return render(request, 'web/account_move.html', {
         'form': form
     })

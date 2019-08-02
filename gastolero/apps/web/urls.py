@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import status, spend_add, assignment_add
+from .views import status, account_add, account_move
 
 urlpatterns = [
     path('status/', status),
-    path('spend/add/', spend_add),
-    path('assignment/add/', assignment_add),
+    path('account/add/', account_add),
+    path('account/move/', account_move),
 ]
