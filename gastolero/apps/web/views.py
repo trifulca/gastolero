@@ -1,9 +1,11 @@
 import month
 from datetime import datetime
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
+from django.urls import reverse
 from django.db.models import Sum
+from django.db import transaction
+
 from transactions.models import Transaction
 from accounts.models import Account
 from budgets.models import MonthlyBudget
@@ -46,7 +48,30 @@ def account_add(request):
 
 
 def account_move(request):
-    form = AccountMoveForm(user=request.user)
+
+    if request.method == 'POST':
+        form = AccountMoveForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                ts = Transaction.objects.create(
+                    account=form.cleaned_data['source'],
+                    amount=form.cleaned_data['amount'] * -1,
+                    timestamp='2019-01-01 01:01:01'
+                )
+
+                tt = Transaction.objects.create(
+                    account=form.cleaned_data['target'],
+                    amount=form.cleaned_data['amount'],
+                    timestamp='2019-01-01 01:01:01',
+                    pair=ts
+                )
+                ts.pair = tt
+                ts.save()
+
+            return redirect(reverse('web:status'))
+
+    else:
+        form = AccountMoveForm(user=request.user)
 
     return render(request, 'web/account_move.html', {
         'form': form
