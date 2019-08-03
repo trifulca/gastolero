@@ -93,15 +93,43 @@ class BasicBudgetTestCase(TestCase):
 
 
         cuentas = Account.objects.filter(user=self.user)
-        # en YNAB llaman a lo siguiente "Total available".
-        saldo_total = sum([c.balance() for c in cuentas])
+
+        ingresos_totales = sum([t.amount for t in Transaction.objects.filter(amount__gt=0)])
 
         # en YNAB llaman a lo siguiente "Total Budgeted".
         presupuestos_del_mes = MonthlyBudget.objects.filter(month=mes_octubre)
         total_presupuestado = sum([p.planned for p in presupuestos_del_mes])
 
         # 3 - El dinero sin presupuestar debería ser $800
-        self.assertEqual(saldo_total - total_presupuestado, 800)
+        self.assertEqual(ingresos_totales - total_presupuestado, 800)
+
+
+        # Si se hace una compra en el supermercado...
+        self.cuenta_corriente.transactions.create(amount=-300,
+            description="Compro verduras y tapas de tarta.",
+            budget=supermercado_de_octubre,
+            timestamp=self.fecha("4/1/2019 15:00"))
+
+
+        # El dinero sin presupuestar debería ser el mismo.
+        self.assertEqual(ingresos_totales - total_presupuestado, 800)
+
+        # El problema es que me pasé en $100 del presupuesto de supermercado
+        # (planned era 200, gasté 300, debería quedarme available=-100)
+        self.assertEqual(supermercado_de_octubre.balance(), -100)
+
+        # Si arreglo el presupuesto de supermercado, para que cierre:
+        supermercado_de_octubre.planned = 300
+        supermercado_de_octubre.save()
+
+        # Ahora si, el balance (available) debería dar 0
+        self.assertEqual(supermercado_de_octubre.balance(), 0)
+
+        # pero, mi "to be budget" debería dar 700
+        ingresos_totales = sum([t.amount for t in Transaction.objects.filter(amount__gt=0)])
+        presupuestos_del_mes = MonthlyBudget.objects.filter(month=mes_octubre)
+        total_presupuestado = sum([p.planned for p in presupuestos_del_mes])
+        self.assertEqual(ingresos_totales - total_presupuestado, 700)
 
 
 
