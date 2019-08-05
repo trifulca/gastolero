@@ -4,67 +4,68 @@
 
 {% block content %}
 
-<div>
+<div class="columns">
+  <div class="column">
   <h2>Cuentas</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Balance</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for account in accounts %}
+        <tr>
+          <td>{{ account.alias }}</td>
+          <td>{{ account.balance|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="2">No hay cuentas</td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td>Total</td>
+          <td>{{ accounts_total|floatformat:2 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="column">
+    <h2>Sin presupuestar</h2>
+    <h3>{{ unbudgeted|floatformat:2 }}</h3>
+  </div>
+
+  <div class="column">
+  <h2>Presupuestos</h2>
 
   <table>
     <thead>
       <tr>
         <th>Nombre</th>
-        <th>Balance</th>
+        <th>Planeado</th>
+        <th>Disponible</th>
       </tr>
     </thead>
 
     <tbody>
-      {% for account in accounts %}
+      {% for budget in budgets %}
       <tr>
-        <td>{{ account.alias }}</td>
-        <td>{{ account.balance|floatformat:2 }}</td>
+        <td><a href="{% url 'admin:budgets_monthlybudget_change' budget.id %}">{{ budget.budget.name }}</td>
+        <td>{{ budget.planned|floatformat:2 }}</td>
+        <td>{{ budget.balance|floatformat:2 }}</td>
       </tr>
       {% empty %}
       <tr>
-        <td colspan="2">No hay cuentas</td>
+        <td colspan="2">No hay presupuestos</td>
       </tr>
       {% endfor %}
-      <tr>
-        <td>Total</td>
-        <td>{{ accounts_total|floatformat:2 }}</td>
-      </tr>
     </tbody>
   </table>
+  </div>
 </div>
-
-<div>
-  <h2>Sin presupuestar</h2>
-  <h3>{{ unbudgeted|floatformat:2 }}</h3>
-</div>
-
-<div>
-<h2>Presupuestos</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Planeado</th>
-      <th>Disponible</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    {% for budget in budgets %}
-    <tr>
-      <td><a href="{% url 'admin:budgets_monthlybudget_change' budget.id %}">{{ budget.budget.name }}</td>
-      <td>{{ budget.planned|floatformat:2 }}</td>
-      <td>{{ budget.balance|floatformat:2 }}</td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="2">No hay presupuestos</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-</div>
-
 {% endblock %}
