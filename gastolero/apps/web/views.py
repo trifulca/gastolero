@@ -19,22 +19,32 @@ def current_month():
 
 @login_required
 def status(request):
-    # cur_month = current_month()
-    cur_month = month.Month(2019, 8)
+    cur_month = current_month()
 
     accounts = Account.objects.filter(user=request.user)
     accounts_total = sum([a.balance() for a in accounts])
 
-    budgets = MonthlyBudget.objects.filter(month=cur_month)
+    month_budgets = MonthlyBudget.objects.filter(
+        budget__user=request.user,
+        month=cur_month
+    )
 
-    la_guita = Transaction.objects.filter(budget__isnull=True).aggregate(t=Sum('amount'))['t']
-    budgets_total = MonthlyBudget.objects.filter(budget__user_id=2).aggregate(t=Sum('planned'))['t']
+    la_guita = Transaction.objects.filter(
+       account__user=request.user,
+       budget__isnull=True
+    ).aggregate(t=Sum('amount'))['t']
+
+    budgets_total = MonthlyBudget.objects.filter(
+        budget__user=request.user,
+        month__lte=cur_month
+    ).aggregate(t=Sum('planned'))['t']
+
     unbadgeted = la_guita - budgets_total
 
     return render(request, 'web/status.html', {
         'accounts': accounts,
         'accounts_total': accounts_total,
-        'budgets': budgets,
+        'budgets': month_budgets,
         'unbudgeted': unbadgeted,
     })
 
