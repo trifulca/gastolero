@@ -20,6 +20,7 @@ admin.site.site_header = 'Gastolero'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('i18n/', include('django.conf.urls.i18n')),
     path('', include('web.urls')),
 ]
 

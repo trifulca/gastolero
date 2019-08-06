@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import status, account_add, account_move
+from .views import status, account_move, TransactionListView
 
 app_name = 'web'
 urlpatterns = [
     path('status/', status, name='status'),
-    path('account/add/', account_add),
+    path('transactions/', TransactionListView.as_view(), name='transactions'),
     path('account/move/', account_move),
 ]

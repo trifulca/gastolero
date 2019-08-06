@@ -5,11 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db.models import Sum
 from django.db import transaction
+from django.views.generic.list import ListView
 
 from transactions.models import Transaction
 from accounts.models import Account
 from budgets.models import MonthlyBudget
-from .forms import SpendForm, AccountMoveForm
+from .forms import AccountMoveForm
 
 
 def current_month():
@@ -49,12 +50,23 @@ def status(request):
     })
 
 
-def account_add(request):
-    form = SpendForm()
+class TransactionListView(ListView):
+    context_object_name = 'transactions'
+    template_name = 'web/transactions_list.html'
+    model = Transaction
 
-    return render(request, 'web/spend_add.html', {
-        'form': form
-    })
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        return qs.filter(
+            account__user=self.request.user,
+            budget__month=self.request.GET.get('month', current_month())
+        )
+
+    def get_ordering(self):
+        ordering = self.request.GET.get('ordering', '-timestamp')
+
+        return ordering
 
 
 def account_move(request):
@@ -66,13 +78,13 @@ def account_move(request):
                 ts = Transaction.objects.create(
                     account=form.cleaned_data['source'],
                     amount=form.cleaned_data['amount'] * -1,
-                    timestamp='2019-01-01 01:01:01'
+                    timestamp=form.cleaned_data['timestamp']
                 )
 
                 tt = Transaction.objects.create(
                     account=form.cleaned_data['target'],
                     amount=form.cleaned_data['amount'],
-                    timestamp='2019-01-01 01:01:01',
+                    timestamp=form.cleaned_data['timestamp'],
                     pair=ts
                 )
                 ts.pair = tt

@@ -1,0 +1,28 @@
+  <table class="table is-hoverable is-narrow">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Monto</th>
+          <th>Cuenta</th>
+          <th>Presupuesto</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for trans in transactions %}
+        <tr>
+          <td>{{ trans.timestamp }} <a href="{% url 'admin:transactions_transaction_change' trans.id %}">e</td>
+          <td align="right">{{ trans.amount|floatformat:2 }}</td>
+          <td>{{ trans.account }}</td>
+          <td>{{ trans.budget }}</td>
+          <td>{{ trans.description }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="2">No hay transacciones</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
