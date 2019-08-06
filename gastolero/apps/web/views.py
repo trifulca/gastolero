@@ -60,7 +60,7 @@ class TransactionListView(ListView):
 
         return qs.filter(
             account__user=self.request.user,
-            budget__month=self.request.GET.get('month', current_month())
+            budget_id=self.request.GET.get('budget')
         )
 
     def get_ordering(self):

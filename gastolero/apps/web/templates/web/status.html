@@ -57,7 +57,7 @@
         <tr{% if budget.balance < 0 %} class="is-selected"{% endif %}>
           <td>
 
-  <button ic-get-from="/transactions/" ic-target="#transactions_list">Update Div</button>
+  <button ic-get-from="/transactions/?budget={{ budget.id }}" ic-target="#transactions_list">V</button>
 
           {{ budget.budget.name }} <a href="{% url 'admin:budgets_monthlybudget_change' budget.id %}">e</td>
           <td align="right">{{ budget.planned|floatformat:2 }}</td>
