@@ -39,6 +39,12 @@ class MonthlyBudget(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.budget, self.month._date.strftime('%B'))
 
+    @property
+    def executed(self):
+        return abs(self.transactions.aggregate(
+            s=Coalesce(Sum('amount'), 0)
+        )['s'])
+
+    @property
     def balance(self):
-        return self.planned + \
-               self.transactions.aggregate(s=Coalesce(Sum('amount'), 0))['s']
+        return self.planned - self.executed
