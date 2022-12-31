@@ -20,9 +20,11 @@ docker-build-dev: ## Build the Docker development image
 docker-shell: ## Launch Docker shell
 	docker run -it --name gastolero --rm \
 		--volume $(shell pwd):/usr/app \
+		--user $(shell id -u):$(shell id -g) \
 		--net=host gastolero-dev:latest
 
 docker-runserver: ## Lauch Django's runserver
 	docker run -it --name gastolero --rm \
 		--volume $(shell pwd):/usr/app \
-		--net=host gastolero-dev:latest bash -c "cd gastolero && ./manage.py migrate && ./manage.py runserver"
+		--user $(shell id -u):$(shell id -g) \
+		--net=host gastolero-dev:latest bash -c "cd gastolero && ./manage.py runserver"
