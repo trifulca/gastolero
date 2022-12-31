@@ -1,0 +1,16 @@
+FROM python:3.7.3-alpine
+
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash make
+
+ENV VIRTUAL_ENV=/usr/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+COPY requirements/* ./
+RUN pip install -r local.txt
+
+ENV DJANGO_SETTINGS_MODULE=settings.local
+WORKDIR /usr/app
+
+CMD ["/bin/bash"]
