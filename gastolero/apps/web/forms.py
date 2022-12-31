@@ -23,6 +23,7 @@ class AccountMoveForm(forms.Form):
     target = forms.ModelChoiceField(queryset=None,
                                     to_field_name='alias')
     amount = forms.DecimalField()
+    timestamp = forms.DateTimeField()
 
     def __init__(self, user, *args, **kwargs):
         super(AccountMoveForm, self).__init__(*args, **kwargs)

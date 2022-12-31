@@ -18,3 +18,6 @@ class Transaction(models.Model):
 
     pair = models.ForeignKey('self', on_delete=models.SET_NULL,
                              blank=True, null=True)
+
+    class Meta:
+        ordering = ('-timestamp', )
