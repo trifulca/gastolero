@@ -1,6 +1,10 @@
-# Makefile
-
 SHELL := /bin/bash
+include config.env
+
+DOCKER_RUN_BASE := docker run -it --rm
+DOCKER_RUN_BASE += --volume $(shell pwd):/usr/app
+DOCKER_RUN_BASE += --user $(shell id -u):$(shell id -g)
+DOCKER_RUN_BASE += --net=host $(APP_NAME)-dev:latest
 
 .PHONY: help
 
@@ -9,22 +13,14 @@ help: ## This help.
 
 .DEFAULT_GOAL := help
 
-build-virtualenv: ## Build the virtualenv
-	rm -rf .virtualenv
-	python -m venv .virtualenv
-	source .virtualenv/bin/activate && pip install -r requirements/local.txt
-
 docker-build-dev: ## Build the Docker development image
-	docker build -t gastolero-dev -f Dockerfile.dev .
+	docker build -t $(APP_NAME)-dev -f Dockerfile.dev .
 
 docker-shell: ## Launch Docker shell
-	docker run -it --name gastolero --rm \
-		--volume $(shell pwd):/usr/app \
-		--user $(shell id -u):$(shell id -g) \
-		--net=host gastolero-dev:latest
+	$(DOCKER_RUN_BASE)
 
 docker-runserver: ## Lauch Django's runserver
-	docker run -it --name gastolero --rm \
-		--volume $(shell pwd):/usr/app \
-		--user $(shell id -u):$(shell id -g) \
-		--net=host gastolero-dev:latest bash -c "cd gastolero && ./manage.py runserver"
+	$(DOCKER_RUN_BASE) bash -c "cd gastolero && ./manage.py runserver"
+
+docker-makemigrations: ## Update Django's migrations
+	$(DOCKER_RUN_BASE) bash -c "cd gastolero && ./manage.py makemigrations"
