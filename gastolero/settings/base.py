@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'budgets',
     'transactions',
     'web',
+    'creditcards',
 ]
 
 MIDDLEWARE = [

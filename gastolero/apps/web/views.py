@@ -33,12 +33,12 @@ def status(request):
     la_guita = Transaction.objects.filter(
        account__user=request.user,
        budget__isnull=True
-    ).aggregate(t=Sum('amount'))['t']
+    ).aggregate(t=Sum('amount'))['t'] or 0
 
     budgets_total = MonthlyBudget.objects.filter(
         budget__user=request.user,
         month__lte=cur_month
-    ).aggregate(t=Sum('planned'))['t']
+    ).aggregate(t=Sum('planned'))['t'] or 0
 
     unbadgeted = la_guita - budgets_total
 
